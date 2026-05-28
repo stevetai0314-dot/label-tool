@@ -224,6 +224,14 @@
         new QRCode(document.getElementById(qrTarget), { text: item.codeB, width: 75, height: 75, correctLevel: QRCode.CorrectLevel.H });
     }
 
+    function postToGAS(data) {
+      fetch(GAS_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: JSON.stringify(data)
+      });
+    }
+
     async function startExportProcess() {
         const btn = document.getElementById('btnExport');
         const specName = scannedData[0].specName;
@@ -232,6 +240,9 @@
 
         // 1. 下載 Excel (維持 30 列)
         exportExcel(specName, dateStr, huiStr);
+
+        // 3. 同步寫入 Google Sheets（fire-and-forget）
+        postToGAS(scannedData);
 
         // 2. 執行 PDF 渲染 (產出 60 張)
         btn.disabled = true;
