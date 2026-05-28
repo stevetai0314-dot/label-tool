@@ -1,0 +1,13 @@
+{
+  "name": "標籤生產系統 / Hệ thống in nhãn",
+  "short_name": "標籤系統",
+  "description": "染整印標籤掃描與產出工具",
+  "start_url": "/label-tool/",
+  "display": "standalone",
+  "orientation": "landscape",
+  "theme_color": "#0984e3",
+  "background_color": "#1e272e",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
