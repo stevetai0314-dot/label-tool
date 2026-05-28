@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>標籤生產系統 - 一式兩份版</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --primary: #0984e3;
+            --success: #00b894;
+            --dark-bg: #1e272e;
+            --card-bg: #2f3640;
+            --accent: #fbc531;
+        }
+
+        body { font-family: "Segoe UI", "Microsoft JhengHei", sans-serif; background: var(--dark-bg); color: #f5f6fa; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+
+        .setup-zone { 
+            background: var(--card-bg); 
+            padding: 25px; border-radius: 15px; 
+            display: grid; grid-template-columns: 2fr 3fr 1fr; gap: 20px;
+            margin-bottom: 25px; width: 100%; max-width: 1100px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); align-items: end;
+        }
+
+        .config-item { display: flex; flex-direction: column; gap: 8px; }
+        .config-item label { font-size: 13px; color: #dcdde1; font-weight: bold; }
+        .date-group { display: flex; gap: 5px; align-items: center; }
+
+        input, select { padding: 10px; border-radius: 6px; border: 1px solid #485460; font-size: 15px; background: #f5f6fa; color: #2f3640; font-weight: 600; width: 100%; box-sizing: border-box; }
+        
+        .scan-zone { background: var(--primary); padding: 30px; border-radius: 15px; width: 100%; max-width: 600px; text-align: center; margin-bottom: 40px; box-shadow: 0 10px 30px rgba(9, 132, 227, 0.4); }
+        #scanner { width: 100%; font-size: 32px; text-align: center; border-radius: 10px; border: none; margin-top: 10px; }
+        .counter-box { font-size: 18px; margin-top: 15px; color: #f5f6fa; }
+        #count { font-size: 36px; color: var(--accent); font-weight: 900; margin: 0 10px; }
+
+        #previewArea { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 40px; width: 100%; max-width: 1200px; padding: 20px; }
+        .preview-wrapper { width: 160px; height: 260px; position: relative; margin: 0 auto; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5)); }
+        .preview-wrapper .label-canvas { width: 400px; height: 240px; background: white; color: black; position: absolute; transform: rotate(90deg) scale(calc(160 / 240)); transform-origin: top left; left: 160px; }
+
+        #hidden-capture-zone { position: absolute; left: -9999px; }
+        .el { position: absolute; display: flex; align-items: center; justify-content: center; }
+        .txt { transform: rotate(270deg); white-space: pre; font-weight: bold; text-align: center; color: black; }
+        .qr-box canvas, .qr-box img { transform: rotate(270deg); }
+        
+        .button-group { display: flex; gap: 20px; margin: 40px 0; }
+        .btn-main { 
+            padding: 18px 60px; border: none; border-radius: 50px; 
+            font-size: 20px; cursor: pointer; font-weight: bold; 
+            transition: all 0.3s; color: white; box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            background: linear-gradient(135deg, var(--success) 0%, var(--primary) 100%);
+        }
+        .btn-main:disabled { background: #636e72 !important; cursor: not-allowed; transform: none; box-shadow: none; }
+    </style>
+</head>
+<body>
+
+<div class="setup-zone">
+<div class="config-item"><label>生產規格 / Quy cách</label><select id="specSelector" onchange="applySpec()"></select></div>
+    <div class="config-item">
+        <label>生產日期 / Ngày sản xuất</label>
+        <div class="date-group"><select id="mYear"></select><select id="mMonth"></select><select id="mDate"></select></div>
+    </div>
+    <div class="config-item"><label>回數 / Lượt</label><select id="mHui"><option value="">-- 請選擇 --</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select></div>
+</div>
+
+<div class="scan-zone">
+    <div id="status">請先匯入規格表 / Vui lòng nhập danh sách quy cách</div>
+    <input type="text" id="scanner" placeholder="SCAN K-CODE..." disabled autofocus>
+    <div class="counter-box">掃描組數 / Đã quét: <span id="count">0</span> / 30 (PDF 將產出 60 張)</div>
+</div>
+
+<div id="previewArea"></div>
+<div id="hidden-capture-zone"></div>
+
+<div class="button-group">
+    <button id="btnExport" class="btn-main" onclick="startExportProcess()" disabled>
+        產出資料(30列)與標籤(60張)
+    </button>
+</div>
+
+<script>
+    const GAS_URL = 'PASTE_YOUR_WEB_APP_URL_HERE';
+    const { jsPDF } = window.jspdf;
+    let specsData = {}; 
+    let scannedData = [];
+    let currentLayout = [];
+
+    window.onload = () => { initTime(); loadSpecsFromGAS(); };
+
+    function initTime() {
+        const d = new Date();
+        const ySel = document.getElementById('mYear');
+        for(let i=0; i<=9; i++) ySel.add(new Option(`202${i}`, i));
+        ySel.value = d.getFullYear().toString().slice(-1);
+        const mSel = document.getElementById('mMonth');
+        for(let i=1; i<=12; i++) mSel.add(new Option(`${i}月`, i));
+        mSel.value = d.getMonth() + 1;
+        const dSel = document.getElementById('mDate');
+        for(let i=1; i<=31; i++) {
+            const v = i.toString().padStart(2, '0');
+            dSel.add(new Option(`${v}日`, v));
+        }
+        dSel.value = d.getDate().toString().padStart(2, '0');
+    }
+
+    async function loadSpecsFromGAS() {
+      document.getElementById('status').innerText = '規格載入中 / Đang tải...';
+      try {
+        const res = await fetch(GAS_URL);
+        const arr = await res.json();
+        specsData = {};
+        arr.forEach(row => { specsData[row.SpecName] = row; });
+        updateSpecSelector();
+      } catch (err) {
+        document.getElementById('status').innerText = '⚠️ 規格載入失敗，請檢查網路';
+      }
+    }
+
+    function updateSpecSelector() {
+        const sel = document.getElementById('specSelector');
+        sel.innerHTML = '<option value="">-- 選擇規格 --</option>';
+        for(let name in specsData) sel.add(new Option(name, name));
+        document.getElementById('scanner').disabled = false;
+        document.getElementById('status').innerText = "請開始掃描";
+    }
+
+    function applySpec() {
+        const specName = document.getElementById('specSelector').value;
+        const spec = specsData[specName];
+        if(!spec) return;
+        currentLayout = JSON.parse(spec.LayoutJSON);
+        scannedData = [];
+        document.getElementById('previewArea').innerHTML = "";
+        document.getElementById('hidden-capture-zone').innerHTML = "";
+        document.getElementById('count').innerText = "0";
+        document.getElementById('scanner').focus();
+        document.getElementById('btnExport').disabled = true;
+    }
+
+    document.getElementById('scanner').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            const rawA = e.target.value.trim();
+            const hui = document.getElementById('mHui').value;
+            
+            // 檢查是否選擇回數
+            if (!hui) {
+                alert("⚠️ 請先選擇回數");
+                e.target.value = '';
+                return;
+            }
+            
+            if (!rawA || scannedData.length >= 30) return;
+            const firstA = rawA.split(';')[0];
+            if (scannedData.some(i => i.firstA === firstA)) { alert("重複！"); e.target.value = ''; return; }
+            
+            const m = document.getElementById('mMonth').value;
+            const monthMap = {"1":"1","2":"2","3":"3","4":"4","5":"5","6":"6","7":"7","8":"8","9":"9","10":"A","11":"B","12":"C"};
+            const seq = (scannedData.length + 1).toString().padStart(2, '0');
+            const codeB = `C${document.getElementById('mYear').value}${monthMap[m]}${document.getElementById('mDate').value}1${seq}${hui}`;
+            
+            const specName = document.getElementById('specSelector').value;
+            const spec = specsData[specName];
+            const item = {
+                seq, firstA, codeB, specName, hui,
+                date: `202${document.getElementById('mYear').value}-${m.padStart(2,'0')}-${document.getElementById('mDate').value}`,
+                r1: spec.Row1_Text, r2: spec.Row2_Text, r3: spec.Row3_Text, r4: spec.Row4_Text
+            };
+            
+            scannedData.push(item);
+            renderLabel(item, document.getElementById('previewArea'), true);
+            renderLabel(item, document.getElementById('hidden-capture-zone'), false);
+            document.getElementById('count').innerText = scannedData.length;
+            e.target.value = '';
+            if(scannedData.length >= 1) document.getElementById('btnExport').disabled = false;
+        }
+    });
+
+    function renderLabel(item, container, isPreview) {
+        const wrapper = document.createElement('div');
+        if(isPreview) wrapper.className = 'preview-wrapper';
+        const label = document.createElement('div');
+        label.className = 'label-canvas';
+        if(!isPreview) {
+            label.style.transform = 'none'; label.style.position = 'relative';
+            label.style.display = 'block'; label.style.marginBottom = '50px';
+        }
+
+        currentLayout.forEach(config => {
+            const div = document.createElement('div');
+            const isLine = config.id.toLowerCase().includes('line');
+            div.className = 'el' + (config.id === 'el5' ? ' qr-box' : '');
+            div.style.left = config.L + 'px'; div.style.top = config.T + 'px';
+            div.style.width = config.W + 'px'; div.style.height = config.H + 'px';
+
+            if (isLine) {
+                div.style.backgroundColor = 'black';
+            } else if(config.id === 'el5') {
+                div.id = (isPreview ? 'p_' : 'c_') + item.seq;
+            } else {
+                let content = "";
+                if(config.id === 'el1') content = item.r1;
+                if(config.id === 'el2') content = item.r2;
+                if(config.id === 'el_r3') content = item.r3;
+                if(config.id === 'el_r4') content = item.r4;
+                if(config.id === 'el3') content = item.firstA;
+                if(config.id === 'el4') content = item.codeB;
+                if(config.id === 'el6') content = item.date;
+                div.innerHTML = `<div class="txt" style="font-size:${config.FS}px">${content}</div>`;
+            }
+            label.appendChild(div);
+        });
+
+        wrapper.appendChild(label);
+        isPreview ? container.prepend(wrapper) : container.appendChild(wrapper);
+        const qrTarget = (isPreview ? 'p_' : 'c_') + item.seq;
+        new QRCode(document.getElementById(qrTarget), { text: item.codeB, width: 75, height: 75, correctLevel: QRCode.CorrectLevel.H });
+    }
+
+    async function startExportProcess() {
+        const btn = document.getElementById('btnExport');
+        const specName = scannedData[0].specName;
+        const dateStr = scannedData[0].date;
+        const huiStr = `第${scannedData[0].hui}回`;
+
+        // 1. 下載 Excel (維持 30 列)
+        exportExcel(specName, dateStr, huiStr);
+
+        // 2. 執行 PDF 渲染 (產出 60 張)
+        btn.disabled = true;
+        await exportPDF(btn, specName, dateStr, huiStr);
+    }
+
+    function exportExcel(specName, dateStr, huiStr) {
+        const excelData = scannedData.map(item => ({
+            "序號": item.seq, "規格": item.specName, "原始條碼 (A)": item.firstA, "新條碼 (B)": item.codeB, "生產日期": item.date, "回數": item.hui
+        }));
+        const worksheet = XLSX.utils.json_to_sheet(excelData);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "對照表");
+        XLSX.writeFile(workbook, `對照表_${specName}_${dateStr}_${huiStr}.xlsx`);
+    }
+
+    async function exportPDF(btn, specName, dateStr, huiStr) {
+        const doc = new jsPDF({ orientation: "l", unit: "mm", format: [100, 60] });
+        const targets = document.querySelectorAll('#hidden-capture-zone .label-canvas');
+        const totalItems = targets.length;
+
+        // 預先將所有標籤轉為圖片資料，避免重複渲染 html2canvas 浪費效能
+        const images = [];
+        for (let i = 0; i < totalItems; i++) {
+            btn.innerText = `⏳ 正在準備影像資料 ${i+1}/${totalItems}...`;
+            const canvas = await html2canvas(targets[i], { 
+                scale: 3, useCORS: true, backgroundColor: "#ffffff", width: 400, height: 240
+            });
+            images.push(canvas.toDataURL('image/jpeg', 1.0));
+        }
+
+        // --- 第一套 1-30 ---
+        for (let i = 0; i < images.length; i++) {
+            btn.innerText = `⏳ 正在寫入第一套標籤 ${i+1}/${totalItems}...`;
+            // 第一頁不需要 addPage (除非是多份文件的後續處理)，但為了保險起見用 i > 0 判斷
+            if (i > 0) doc.addPage([100, 60], "l"); 
+            doc.addImage(images[i], 'JPEG', 0, 0, 100, 60);
+        }
+
+        // --- 第二套 1-30 ---
+        for (let i = 0; i < images.length; i++) {
+            btn.innerText = `⏳ 正在寫入第二套標籤 ${i+1}/${totalItems}...`;
+            doc.addPage([100, 60], "l"); // 這裡每一頁都要 addPage
+            doc.addImage(images[i], 'JPEG', 0, 0, 100, 60);
+        }
+
+        doc.save(`標籤60張_${specName}_${dateStr}_${huiStr}.pdf`);
+        btn.innerText = "產出資料(30列)與標籤(60張)";
+        btn.disabled = false;
+    }
+
+</script>
+</body>
+</html>
