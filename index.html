@@ -154,6 +154,11 @@
             
             if (!rawA || scannedData.length >= 30) return;
             const firstA = rawA.split(';')[0];
+            if (!firstA.startsWith('K')) {
+              alert('⚠️ 格式不對，請確認掃到 K-Code');
+              e.target.value = '';
+              return;
+            }
             if (scannedData.some(i => i.firstA === firstA)) { alert("重複！"); e.target.value = ''; return; }
             
             const m = document.getElementById('mMonth').value;
