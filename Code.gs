@@ -1,4 +1,4 @@
-const SHEET_ID = 'PASTE_YOUR_SHEET_ID_HERE';
+const SHEET_ID = '1vyx4NpKJ6EnsiQPCHqS6MEhgB_T4ddCJ21V3b4RuW9g';
 const SPEC_TAB = '規格表';
 const LOG_TAB = '對照表';
 
