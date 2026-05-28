@@ -67,7 +67,7 @@
 </div>
 
 <div class="scan-zone">
-    <div id="status">請先匯入規格表 / Vui lòng nhập danh sách quy cách</div>
+    <div id="status">規格載入中 / Đang tải quy cách...</div>
     <input type="text" id="scanner" placeholder="SCAN K-CODE..." disabled autofocus>
     <div class="counter-box">掃描組數 / Đã quét: <span id="count">0</span> / 30 (PDF 將產出 60 張)</div>
 </div>
@@ -82,7 +82,7 @@
 </div>
 
 <script>
-    const GAS_URL = 'PASTE_YOUR_WEB_APP_URL_HERE';
+    const GAS_URL = 'PASTE_YOUR_WEB_APP_URL_HERE'; // GAS Web App 部署後填入此處
     const { jsPDF } = window.jspdf;
     let specsData = {}; 
     let scannedData = [];
