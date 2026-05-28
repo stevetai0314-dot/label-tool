@@ -63,13 +63,13 @@
         <label>生產日期 / Ngày sản xuất</label>
         <div class="date-group"><select id="mYear"></select><select id="mMonth"></select><select id="mDate"></select></div>
     </div>
-    <div class="config-item"><label>回數 / Lượt</label><select id="mHui"><option value="">-- 請選擇 --</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select></div>
+    <div class="config-item"><label>回數 / Lượt</label><select id="mHui"><option value="">-- 請選擇 / Vui lòng chọn --</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select></div>
 </div>
 
 <div class="scan-zone">
     <div id="status">規格載入中 / Đang tải quy cách...</div>
     <input type="text" id="scanner" placeholder="SCAN K-CODE..." disabled autofocus>
-    <div class="counter-box">掃描組數 / Đã quét: <span id="count">0</span> / 30 (PDF 將產出 60 張)</div>
+    <div class="counter-box">掃描組數 / Đã quét: <span id="count">0</span> / 30 (PDF 將產出 60 張 / xuất 60 tờ)</div>
 </div>
 
 <div id="previewArea"></div>
@@ -77,7 +77,7 @@
 
 <div class="button-group">
     <button id="btnExport" class="btn-main" onclick="startExportProcess()" disabled>
-        產出資料(30列)與標籤(60張)
+        產出資料(30列)與標籤(60張) / Xuất dữ liệu & nhãn
     </button>
 </div>
 
@@ -115,16 +115,16 @@
         arr.forEach(row => { specsData[row.SpecName] = row; });
         updateSpecSelector();
       } catch (err) {
-        document.getElementById('status').innerText = '⚠️ 規格載入失敗，請檢查網路';
+        document.getElementById('status').innerText = '⚠️ 規格載入失敗，請檢查網路 / Tải quy cách thất bại, kiểm tra mạng';
       }
     }
 
     function updateSpecSelector() {
         const sel = document.getElementById('specSelector');
-        sel.innerHTML = '<option value="">-- 選擇規格 --</option>';
+        sel.innerHTML = '<option value="">-- 選擇規格 / Chọn quy cách --</option>';
         for(let name in specsData) sel.add(new Option(name, name));
         document.getElementById('scanner').disabled = false;
-        document.getElementById('status').innerText = "請開始掃描";
+        document.getElementById('status').innerText = "請開始掃描 / Vui lòng bắt đầu quét";
     }
 
     function applySpec() {
@@ -147,7 +147,7 @@
             
             // 檢查是否選擇回數
             if (!hui) {
-                alert("⚠️ 請先選擇回數");
+                alert("⚠️ 請先選擇回數 / Vui lòng chọn Lượt trước");
                 e.target.value = '';
                 return;
             }
@@ -155,11 +155,11 @@
             if (!rawA || scannedData.length >= 30) return;
             const firstA = rawA.split(';')[0];
             if (!firstA.startsWith('K')) {
-              alert('⚠️ 格式不對，請確認掃到 K-Code');
+              alert('⚠️ 格式不對，請確認掃到 K-Code / Sai định dạng, vui lòng quét K-Code');
               e.target.value = '';
               return;
             }
-            if (scannedData.some(i => i.firstA === firstA)) { alert("重複！"); e.target.value = ''; return; }
+            if (scannedData.some(i => i.firstA === firstA)) { alert("重複！/ Trùng lặp!"); e.target.value = ''; return; }
             
             const m = document.getElementById('mMonth').value;
             const monthMap = {"1":"1","2":"2","3":"3","4":"4","5":"5","6":"6","7":"7","8":"8","9":"9","10":"A","11":"B","12":"C"};
@@ -233,12 +233,12 @@
           body: JSON.stringify(data)
         });
         if (res.ok) {
-          statusEl.innerText = '✅ 已同步至雲端';
+          statusEl.innerText = '✅ 已同步至雲端 / Đã đồng bộ lên đám mây';
         } else {
-          statusEl.innerText = '⚠️ 雲端同步失敗，請手動確認';
+          statusEl.innerText = '⚠️ 雲端同步失敗，請手動確認 / Đồng bộ thất bại, kiểm tra thủ công';
         }
       } catch (err) {
-        statusEl.innerText = '⚠️ 雲端同步失敗，請手動確認';
+        statusEl.innerText = '⚠️ 雲端同步失敗，請手動確認 / Đồng bộ thất bại, kiểm tra thủ công';
       }
     }
 
@@ -277,7 +277,7 @@
         // 預先將所有標籤轉為圖片資料，避免重複渲染 html2canvas 浪費效能
         const images = [];
         for (let i = 0; i < totalItems; i++) {
-            btn.innerText = `⏳ 正在準備影像資料 ${i+1}/${totalItems}...`;
+            btn.innerText = `⏳ 正在準備影像資料 ${i+1}/${totalItems} / Đang chuẩn bị hình ảnh...`;
             const canvas = await html2canvas(targets[i], { 
                 scale: 3, useCORS: true, backgroundColor: "#ffffff", width: 400, height: 240
             });
@@ -286,7 +286,7 @@
 
         // --- 第一套 1-30 ---
         for (let i = 0; i < images.length; i++) {
-            btn.innerText = `⏳ 正在寫入第一套標籤 ${i+1}/${totalItems}...`;
+            btn.innerText = `⏳ 正在寫入第一套標籤 ${i+1}/${totalItems} / Đang ghi nhãn bộ 1...`;
             // 第一頁不需要 addPage (除非是多份文件的後續處理)，但為了保險起見用 i > 0 判斷
             if (i > 0) doc.addPage([100, 60], "l"); 
             doc.addImage(images[i], 'JPEG', 0, 0, 100, 60);
@@ -294,13 +294,13 @@
 
         // --- 第二套 1-30 ---
         for (let i = 0; i < images.length; i++) {
-            btn.innerText = `⏳ 正在寫入第二套標籤 ${i+1}/${totalItems}...`;
+            btn.innerText = `⏳ 正在寫入第二套標籤 ${i+1}/${totalItems} / Đang ghi nhãn bộ 2...`;
             doc.addPage([100, 60], "l"); // 這裡每一頁都要 addPage
             doc.addImage(images[i], 'JPEG', 0, 0, 100, 60);
         }
 
         doc.save(`標籤60張_${specName}_${dateStr}_${huiStr}.pdf`);
-        btn.innerText = "產出資料(30列)與標籤(60張)";
+        btn.innerText = "產出資料(30列)與標籤(60張) / Xuất dữ liệu & nhãn";
         btn.disabled = false;
     }
 
