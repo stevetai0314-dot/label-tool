@@ -1,79 +1,85 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#1e272e"/>
-      <stop offset="100%" style="stop-color:#2d3436"/>
-    </linearGradient>
-    <filter id="glow">
-      <feGaussianBlur stdDeviation="2" result="blur"/>
-      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    <filter id="redglow" x="-20%" y="-200%" width="140%" height="500%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="greenglow" x="-10%" y="-100%" width="120%" height="300%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
     </filter>
   </defs>
 
-  <!-- Background -->
-  <rect width="256" height="256" rx="44" fill="url(#bg)"/>
+  <!-- Background: dark charcoal rounded square -->
+  <rect width="512" height="512" rx="88" fill="#1c1c24"/>
 
-  <!-- Cat body (tuxedo black) -->
-  <!-- Left ear -->
-  <polygon points="72,82 52,28 102,68" fill="#222"/>
-  <!-- Right ear -->
-  <polygon points="184,82 204,28 154,68" fill="#222"/>
-  <!-- Inner ear pink -->
-  <polygon points="75,76 60,38 98,66" fill="#e17055"/>
-  <polygon points="181,76 196,38 158,66" fill="#e17055"/>
+  <!-- Ears (flat geometric) -->
+  <polygon points="118,195 82,72 198,162" fill="#d0d0d0"/>
+  <polygon points="394,195 430,72 314,162" fill="#d0d0d0"/>
+  <!-- Inner ear cyber green -->
+  <polygon points="122,185 94,95 188,162" fill="#00ff88" opacity="0.55"/>
+  <polygon points="390,185 418,95 324,162" fill="#00ff88" opacity="0.55"/>
 
-  <!-- Head -->
-  <ellipse cx="128" cy="115" rx="68" ry="65" fill="#222"/>
+  <!-- Cat head: flat white/light -->
+  <ellipse cx="256" cy="285" rx="162" ry="150" fill="#e2e2e2"/>
 
-  <!-- White tuxedo chest (bib) -->
-  <ellipse cx="128" cy="156" rx="32" ry="40" fill="#f0f0f0"/>
-  <!-- White muzzle -->
-  <ellipse cx="128" cy="128" rx="28" ry="22" fill="#f0f0f0"/>
+  <!-- Tuxedo chest: pure white bib -->
+  <ellipse cx="256" cy="388" rx="80" ry="82" fill="#ffffff"/>
 
-  <!-- Eyes white -->
-  <ellipse cx="104" cy="102" rx="16" ry="15" fill="white"/>
-  <ellipse cx="152" cy="102" rx="16" ry="15" fill="white"/>
-  <!-- Pupils -->
-  <ellipse cx="106" cy="103" rx="10" ry="12" fill="#111"/>
-  <ellipse cx="154" cy="103" rx="10" ry="12" fill="#111"/>
-  <!-- Eye shine -->
-  <circle cx="110" cy="99" r="4" fill="white"/>
-  <circle cx="158" cy="99" r="4" fill="white"/>
+  <!-- Eyes: dark geometric ovals -->
+  <ellipse cx="192" cy="258" rx="44" ry="40" fill="#1c1c24"/>
+  <ellipse cx="320" cy="258" rx="44" ry="40" fill="#1c1c24"/>
+  <!-- Eye inner pupils -->
+  <ellipse cx="192" cy="260" rx="26" ry="30" fill="#0a0a10"/>
+  <ellipse cx="320" cy="260" rx="26" ry="30" fill="#0a0a10"/>
+  <!-- Eye rim: cyber green -->
+  <ellipse cx="192" cy="258" rx="44" ry="40" fill="none" stroke="#00ff88" stroke-width="3.5"/>
+  <ellipse cx="320" cy="258" rx="44" ry="40" fill="none" stroke="#00ff88" stroke-width="3.5"/>
+  <!-- Eye shine dot -->
+  <circle cx="204" cy="248" r="7" fill="#00ff88" opacity="0.8"/>
+  <circle cx="332" cy="248" r="7" fill="#00ff88" opacity="0.8"/>
 
-  <!-- Nose -->
-  <polygon points="128,122 122,129 134,129" fill="#fd79a8"/>
+  <!-- RED LASER LINE across eyes (cyberpunk scanner) -->
+  <rect x="44" y="251" width="424" height="14" rx="7" fill="#cc0022" opacity="0.35" filter="url(#redglow)"/>
+  <rect x="44" y="254" width="424" height="8" rx="4" fill="#ff0033" opacity="0.95"/>
+  <rect x="44" y="256" width="424" height="4" rx="2" fill="#ff6680"/>
+
+  <!-- Nose: cyber green triangle -->
+  <polygon points="256,300 241,318 271,318" fill="#00ff88" filter="url(#greenglow)"/>
+
   <!-- Mouth -->
-  <path d="M122 129 Q128 135 134 129" fill="none" stroke="#555" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M241 318 Q256 330 271 318" fill="none" stroke="#888" stroke-width="3" stroke-linecap="round"/>
 
   <!-- Whiskers -->
-  <line x1="100" y1="126" x2="62" y2="118" stroke="#aaa" stroke-width="1.5" stroke-linecap="round"/>
-  <line x1="100" y1="132" x2="62" y2="132" stroke="#aaa" stroke-width="1.5" stroke-linecap="round"/>
-  <line x1="156" y1="126" x2="194" y2="118" stroke="#aaa" stroke-width="1.5" stroke-linecap="round"/>
-  <line x1="156" y1="132" x2="194" y2="132" stroke="#aaa" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="212" y1="308" x2="100" y2="292" stroke="#555" stroke-width="3" stroke-linecap="round"/>
+  <line x1="212" y1="320" x2="100" y2="320" stroke="#555" stroke-width="3" stroke-linecap="round"/>
+  <line x1="300" y1="308" x2="412" y2="292" stroke="#555" stroke-width="3" stroke-linecap="round"/>
+  <line x1="300" y1="320" x2="412" y2="320" stroke="#555" stroke-width="3" stroke-linecap="round"/>
 
-  <!-- Scanner beam (green glow) -->
-  <rect x="28" y="130" width="200" height="10" rx="5" fill="#00b894" opacity="0.25" filter="url(#glow)"/>
-  <rect x="28" y="132" width="200" height="6" rx="3" fill="#00b894" opacity="0.9"/>
-  <rect x="28" y="134" width="200" height="2" rx="1" fill="#55efc4"/>
-
-  <!-- Barcode at bottom -->
-  <rect x="34"  y="206" width="7"  height="28" rx="1" fill="#00b894"/>
-  <rect x="45"  y="206" width="4"  height="28" rx="1" fill="#00b894"/>
-  <rect x="53"  y="206" width="9"  height="28" rx="1" fill="#00b894"/>
-  <rect x="66"  y="206" width="4"  height="28" rx="1" fill="#00b894"/>
-  <rect x="74"  y="206" width="7"  height="28" rx="1" fill="#00b894"/>
-  <rect x="85"  y="206" width="3"  height="28" rx="1" fill="#00b894"/>
-  <rect x="92"  y="206" width="10" height="28" rx="1" fill="#00b894"/>
-  <rect x="106" y="206" width="5"  height="28" rx="1" fill="#00b894"/>
-  <rect x="115" y="206" width="7"  height="28" rx="1" fill="#00b894"/>
-  <rect x="126" y="206" width="4"  height="28" rx="1" fill="#00b894"/>
-  <rect x="134" y="206" width="9"  height="28" rx="1" fill="#00b894"/>
-  <rect x="147" y="206" width="4"  height="28" rx="1" fill="#00b894"/>
-  <rect x="155" y="206" width="7"  height="28" rx="1" fill="#00b894"/>
-  <rect x="166" y="206" width="3"  height="28" rx="1" fill="#00b894"/>
-  <rect x="173" y="206" width="10" height="28" rx="1" fill="#00b894"/>
-  <rect x="187" y="206" width="5"  height="28" rx="1" fill="#00b894"/>
-  <rect x="196" y="206" width="7"  height="28" rx="1" fill="#00b894"/>
-  <rect x="207" y="206" width="3"  height="28" rx="1" fill="#00b894"/>
-  <rect x="214" y="206" width="8"  height="28" rx="1" fill="#00b894"/>
+  <!-- Barcode scanner strip: cyber green on dark bg -->
+  <rect x="44"  y="442" width="14" height="48" rx="3" fill="#00ff88"/>
+  <rect x="64"  y="442" width="7"  height="48" rx="2" fill="#00ff88"/>
+  <rect x="77"  y="442" width="16" height="48" rx="3" fill="#00ff88"/>
+  <rect x="99"  y="442" width="7"  height="48" rx="2" fill="#00ff88"/>
+  <rect x="112" y="442" width="12" height="48" rx="3" fill="#00ff88"/>
+  <rect x="130" y="442" width="5"  height="48" rx="2" fill="#00ff88"/>
+  <rect x="141" y="442" width="18" height="48" rx="3" fill="#00ff88"/>
+  <rect x="165" y="442" width="8"  height="48" rx="2" fill="#00ff88"/>
+  <rect x="179" y="442" width="12" height="48" rx="3" fill="#00ff88"/>
+  <rect x="197" y="442" width="6"  height="48" rx="2" fill="#00ff88"/>
+  <rect x="209" y="442" width="16" height="48" rx="3" fill="#00ff88"/>
+  <rect x="231" y="442" width="7"  height="48" rx="2" fill="#00ff88"/>
+  <rect x="244" y="442" width="12" height="48" rx="3" fill="#00ff88"/>
+  <rect x="262" y="442" width="5"  height="48" rx="2" fill="#00ff88"/>
+  <rect x="273" y="442" width="18" height="48" rx="3" fill="#00ff88"/>
+  <rect x="297" y="442" width="7"  height="48" rx="2" fill="#00ff88"/>
+  <rect x="310" y="442" width="12" height="48" rx="3" fill="#00ff88"/>
+  <rect x="328" y="442" width="5"  height="48" rx="2" fill="#00ff88"/>
+  <rect x="339" y="442" width="16" height="48" rx="3" fill="#00ff88"/>
+  <rect x="361" y="442" width="8"  height="48" rx="2" fill="#00ff88"/>
+  <rect x="375" y="442" width="12" height="48" rx="3" fill="#00ff88"/>
+  <rect x="393" y="442" width="5"  height="48" rx="2" fill="#00ff88"/>
+  <rect x="404" y="442" width="18" height="48" rx="3" fill="#00ff88"/>
+  <rect x="428" y="442" width="7"  height="48" rx="2" fill="#00ff88"/>
+  <rect x="441" y="442" width="27" height="48" rx="3" fill="#00ff88"/>
 </svg>
