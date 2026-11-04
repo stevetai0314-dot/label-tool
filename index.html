@@ -155,7 +155,7 @@
 
     <h3>🔧 調整高低 / Chỉnh cao thấp</h3>
     <ol>
-        <li>先選規格，再按「版面微調」。<span class="vi">Chọn quy cách trước, rồi bấm "Chỉnh bố cục".</span></li>
+        <li>直接按「版面微調」，不用先選規格。調一次，所有規格一起變。<span class="vi">Bấm "Chỉnh bố cục", không cần chọn quy cách trước. Chỉnh một lần, mọi quy cách cùng thay đổi.</span></li>
         <li>選每次移動的格數，1 格 = 0.25 mm。要微調請選 1。<span class="vi">Chọn số đơn vị mỗi lần, 1 đơn vị = 0.25 mm. Muốn chỉnh nhỏ thì chọn 1.</span></li>
         <li>在要調的項目按 ↑ ↓ 調高低、← → 調左右，標籤預覽會立刻變動。<span class="vi">Ở mục cần chỉnh, bấm ↑ ↓ để chỉnh cao thấp, ← → để chỉnh trái phải. Nhãn xem trước thay đổi ngay.</span></li>
         <li>要整張一起移動，用「全部一起」。<span class="vi">Muốn di chuyển cả nhãn, dùng "Tất cả".</span></li>
@@ -179,12 +179,12 @@
 <div id="tuneModal" role="dialog" aria-modal="true" aria-label="版面微調 / Chỉnh bố cục">
     <div class="tune-panel">
         <div class="tune-head">
-            <h2>🔧 版面微調 / Chỉnh bố cục</h2>
+            <h2>🔧 版面微調（所有規格共用）/ Chỉnh bố cục (dùng chung)</h2>
             <button type="button" class="tbtn" onclick="closeTune()" aria-label="關閉 / Đóng">✕</button>
         </div>
         <p class="tune-note">
-            按箭頭移動，左邊標籤會即時更新。1 單位 = 0.25 mm。儲存後套用到所有規格，只存在這台電腦的瀏覽器。<br>
-            Nhấn mũi tên để di chuyển, nhãn bên trái cập nhật ngay. 1 đơn vị = 0.25 mm. Lưu xong áp dụng cho mọi quy cách, chỉ lưu trên máy này.
+            調一次，所有規格一起變，例如線2往上，每種規格的線2都會往上。按箭頭移動，左邊標籤會即時更新。1 單位 = 0.25 mm。只存在這台電腦的瀏覽器。<br>
+            Chỉnh một lần, mọi quy cách cùng thay đổi, ví dụ Đường 2 lên trên thì Đường 2 của mọi quy cách đều lên trên. Nhấn mũi tên để di chuyển, nhãn bên trái cập nhật ngay. 1 đơn vị = 0.25 mm. Chỉ lưu trên máy này.
         </p>
         <div class="tune-body">
             <div class="tune-stage" id="tuneStage"></div>
@@ -401,11 +401,13 @@
 
     function openTune() {
         const specName = document.getElementById('specSelector').value;
-        if (!specName || !specsData[specName]) {
-            alert('請先選擇規格 / Vui lòng chọn quy cách trước');
+        // 微調是所有規格共用，沒選規格時用第一個規格當預覽
+        const tuneSpec = specsData[specName] || specsData[Object.keys(specsData)[0]];
+        if (!tuneSpec) {
+            alert('規格載入中，請稍候 / Đang tải quy cách, vui lòng đợi');
             return;
         }
-        defaultLayout = JSON.parse(specsData[specName].LayoutJSON);
+        defaultLayout = JSON.parse(tuneSpec.LayoutJSON);
         editLayout = applyTuning(defaultLayout);
         tuneDirty = false;
         tuneHl = null;
@@ -423,7 +425,7 @@
     }
 
     function tuneSampleItem() {
-        const spec = specsData[document.getElementById('specSelector').value] || {};
+        const spec = specsData[document.getElementById('specSelector').value] || specsData[Object.keys(specsData)[0]] || {};
         const m = document.getElementById('mMonth').value;
         const first = scannedData[0];
         return {
