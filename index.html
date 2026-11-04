@@ -99,6 +99,15 @@
         .btn-sec { padding: 12px 24px; border-radius: 50px; border: 1px solid #636e72; background: transparent; color: #f5f6fa; font-size: 15px; cursor: pointer; }
         .btn-sec:hover { background: rgba(255, 255, 255, 0.08); }
         #tuneState { font-size: 14px; color: var(--accent); }
+        .tune-actions { position: sticky; bottom: -20px; background: var(--card-bg); padding: 14px 0; z-index: 2; }
+
+        /* ===== 使用說明 / Hướng dẫn ===== */
+        #usageGuide { background: var(--card-bg); border-radius: 15px; padding: 24px 28px; width: 100%; max-width: 1100px; box-sizing: border-box; margin-bottom: 30px; line-height: 1.7; }
+        #usageGuide h2 { margin: 0 0 12px; font-size: 20px; }
+        #usageGuide h3 { margin: 18px 0 6px; font-size: 16px; color: var(--accent); }
+        #usageGuide ol { margin: 0; padding-left: 22px; }
+        #usageGuide li { margin-bottom: 8px; font-size: 15px; }
+        #usageGuide .vi { display: block; color: #b2bec3; font-size: 14px; }
     </style>
 </head>
 <body>
@@ -133,6 +142,40 @@
     </a>
 </div>
 
+<section id="usageGuide">
+    <h2>📖 使用說明 / Hướng dẫn sử dụng</h2>
+
+    <h3>印標籤 / In nhãn</h3>
+    <ol>
+        <li>選擇規格、生產日期、回數。<span class="vi">Chọn quy cách, ngày sản xuất và lượt.</span></li>
+        <li>掃描 K 碼，最多 30 組。<span class="vi">Quét mã K, tối đa 30 mã.</span></li>
+        <li>按「產出資料與標籤」，會下載 Excel 和 PDF，並寫入對照表。<span class="vi">Bấm nút xuất dữ liệu &amp; nhãn: tải về Excel và PDF, đồng thời ghi vào bảng đối chiếu.</span></li>
+        <li>看到「✅ 已同步」才算完成；看到「⚠️」請手動確認對照表。<span class="vi">Thấy "✅" là hoàn tất; nếu thấy "⚠️" hãy kiểm tra lại bảng đối chiếu.</span></li>
+    </ol>
+
+    <h3>🔧 調整高低 / Chỉnh cao thấp</h3>
+    <ol>
+        <li>先選規格，再按「版面微調」。<span class="vi">Chọn quy cách trước, rồi bấm "Chỉnh bố cục".</span></li>
+        <li>選每次移動的格數，1 格 = 0.25 mm。要微調請選 1。<span class="vi">Chọn số đơn vị mỗi lần, 1 đơn vị = 0.25 mm. Muốn chỉnh nhỏ thì chọn 1.</span></li>
+        <li>在要調的項目按 ↑ ↓ 調高低、← → 調左右，標籤預覽會立刻變動。<span class="vi">Ở mục cần chỉnh, bấm ↑ ↓ để chỉnh cao thấp, ← → để chỉnh trái phải. Nhãn xem trước thay đổi ngay.</span></li>
+        <li>要整張一起移動，用「全部一起」。<span class="vi">Muốn di chuyển cả nhãn, dùng "Tất cả".</span></li>
+    </ol>
+
+    <h3>📐 輸入數值對齊 / Nhập số để căn thẳng</h3>
+    <ol>
+        <li>在視窗下方的數值表直接輸入。L = 上下位置，T = 左右位置（數字變大是往下、往左）。<span class="vi">Nhập trực tiếp vào bảng số bên dưới. L = vị trí trên dưới, T = vị trí trái phải (số lớn hơn là xuống dưới, sang trái).</span></li>
+        <li>W = 上下長度，H = 左右長度，FS = 字體大小。文字會在框內置中。<span class="vi">W = chiều dài trên dưới, H = chiều dài trái phải, FS = cỡ chữ. Chữ nằm giữa khung.</span></li>
+        <li>要讓兩個項目左右對齊：T 和 H 都填一樣。要讓高低對齊：L 和 W 都填一樣。<span class="vi">Muốn thẳng hàng theo chiều trái phải: điền T và H giống nhau. Muốn ngang cao thấp: điền L và W giống nhau.</span></li>
+    </ol>
+
+    <h3>💾 儲存與注意 / Lưu và lưu ý</h3>
+    <ol>
+        <li>按「儲存」才會生效，並套用到所有規格；不滿意可按「還原預設」後再儲存。<span class="vi">Phải bấm "Lưu" mới có hiệu lực và áp dụng cho mọi quy cách. Nếu không vừa ý, bấm "Khôi phục mặc định" rồi lưu lại.</span></li>
+        <li>微調只存在這台電腦的這個瀏覽器，換電腦或換瀏覽器要重新調。<span class="vi">Chỉnh bố cục chỉ lưu trên trình duyệt của máy này. Đổi máy hoặc đổi trình duyệt phải chỉnh lại.</span></li>
+        <li>按產出就會寫入對照表，試印也一樣，請用真實 K 碼。<span class="vi">Mỗi lần bấm xuất đều ghi vào bảng đối chiếu, kể cả in thử, nên hãy dùng mã K thật.</span></li>
+    </ol>
+</section>
+
 <div id="tuneModal" role="dialog" aria-modal="true" aria-label="版面微調 / Chỉnh bố cục">
     <div class="tune-panel">
         <div class="tune-head">
@@ -140,7 +183,7 @@
             <button type="button" class="tbtn" onclick="closeTune()" aria-label="關閉 / Đóng">✕</button>
         </div>
         <p class="tune-note">
-            按箭頭移動，右邊標籤會即時更新。1 單位 = 0.25 mm。儲存後套用到所有規格，只存在這台電腦的瀏覽器。<br>
+            按箭頭移動，左邊標籤會即時更新。1 單位 = 0.25 mm。儲存後套用到所有規格，只存在這台電腦的瀏覽器。<br>
             Nhấn mũi tên để di chuyển, nhãn bên trái cập nhật ngay. 1 đơn vị = 0.25 mm. Lưu xong áp dụng cho mọi quy cách, chỉ lưu trên máy này.
         </p>
         <div class="tune-body">
@@ -154,8 +197,8 @@
                     <button type="button" class="tstep" data-step="10">10</button>
                 </div>
                 <div id="tuneRows"></div>
-                <details>
-                    <summary>進階：直接輸入數值 / Nâng cao: nhập số</summary>
+                <details open>
+                    <summary>📐 輸入數值對齊 / Nhập số để căn thẳng（L 上下、T 左右、W 上下長、H 左右長、FS 字體）</summary>
                     <div class="tune-adv"><table id="tuneTable"></table></div>
                 </details>
             </div>
@@ -440,7 +483,7 @@
         tb.innerHTML = '<tr><th></th><th>L 上下</th><th>T 左右</th><th>W</th><th>H</th><th>FS</th></tr>';
         editLayout.forEach(c => {
             const tr = document.createElement('tr');
-            const first = document.createElement('td'); first.textContent = c.id; tr.appendChild(first);
+            const first = document.createElement('td'); first.textContent = TUNE_NAMES[c.id] || c.id; tr.appendChild(first);
             TUNE_FIELDS.forEach(k => {
                 const td = document.createElement('td'), inp = document.createElement('input');
                 inp.type = 'number'; inp.step = '1'; inp.dataset.eid = c.id; inp.dataset.k = k;
@@ -482,9 +525,13 @@
     }
 
     function tuneMove(id, key, delta) {
-        editLayout.forEach(c => {
-            if ((id === 'all' || c.id === id) && c[key] != null) c[key] = Math.max(0, c[key] + delta);
-        });
+        const targets = editLayout.filter(c => (id === 'all' || c.id === id) && c[key] != null);
+        if (!targets.length) return;
+        // 一起移動時碰到邊就整組停住，避免元素之間的間距跑掉
+        const minPos = Math.min(...targets.map(c => c[key]));
+        if (minPos + delta < 0) delta = -minPos;
+        if (!delta) return;
+        targets.forEach(c => { c[key] += delta; });
         tuneChanged();
     }
 
